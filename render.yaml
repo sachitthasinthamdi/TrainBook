@@ -1,0 +1,13 @@
+# Render Blueprint — deploy อัตโนมัติจากไฟล์นี้
+# วิธีใช้: บน Render เลือก New → Blueprint แล้วชี้มาที่ repo นี้
+services:
+  - type: web
+    name: trainbook
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true   # Render สุ่มค่าลับให้อัตโนมัติ (ปลอดภัยกว่าค่า default)

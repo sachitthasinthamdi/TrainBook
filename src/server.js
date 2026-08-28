@@ -7,8 +7,10 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { db, init } = require('./db');
+const { ensureSeeded } = require('./seed');
 
 init();
+ensureSeeded();   // ถ้าฐานข้อมูลว่าง (เช่นบน hosting ที่ไฟล์รีเซ็ต) จะใส่ข้อมูลตั้งต้นให้อัตโนมัติ
 
 const app = express();
 const PORT = process.env.PORT || 3000;
