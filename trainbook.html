@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrainBook | ระบบจองตั๋วรถไฟออนไลน์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#0D47A1;
+  --primary-light:#1976D0;
+  --accent-blue:#42A5F5;
+  --teal:#26A69A;
+  --amber:#FFB300;
+  --bg:#F5F7FA;
+  --ink:#1B2733;
+  --ink-soft:#5B6B7A;
+  --line:#E3E8EE;
+  --ok:#2E9E6D;
+  --danger:#E24C4C;
+  --radius:14px;
+  --shadow:0 8px 24px rgba(13,71,161,0.08);
+  --shadow-lg:0 20px 48px rgba(13,71,161,0.16);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Sarabun','Kanit',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,.brand,.btn,.step-label,.num-badge,nav a{font-family:'Kanit','Sarabun',sans-serif;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+a{text-decoration:none;color:inherit;}
+.container{max-width:1200px;margin:0 auto;padding:0 24px;}
+
+/* ---------- Header ---------- */
+header.site-header{
+  position:sticky;top:0;z-index:50;
+  background:#fff;border-bottom:1px solid var(--line);
+}
+.header-row{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;color:var(--primary);}
+.brand .logo-icon{
+  width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--accent-blue));
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;
+}
+.brand small{display:block;font-family:'Sarabun';font-weight:400;font-size:10.5px;letter-spacing:.06em;color:var(--ink-soft);}
+nav.main-nav{display:flex;gap:28px;}
+nav.main-nav a{font-size:15px;color:var(--ink-soft);font-weight:500;padding:8px 0;border-bottom:2px solid transparent;transition:.15s;}
+nav.main-nav a:hover,nav.main-nav a.active{color:var(--primary);border-color:var(--primary);}
+.header-actions{display:flex;gap:10px;align-items:center;}
+.user-chip{display:none;align-items:center;gap:8px;background:var(--bg);padding:6px 14px 6px 6px;border-radius:999px;cursor:pointer;}
+.user-chip .avatar{width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;}
+.user-chip span{font-size:14px;font-weight:500;}
+
+.btn{border:none;border-radius:10px;padding:11px 22px;font-size:15px;font-weight:600;transition:.15s;display:inline-flex;align-items:center;gap:8px;justify-content:center;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-light);}
+.btn-ghost{background:transparent;color:var(--primary);border:1.5px solid var(--line);}
+.btn-ghost:hover{border-color:var(--primary);}
+.btn-block{width:100%;}
+.btn-lg{padding:15px 24px;font-size:16px;border-radius:12px;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+
+/* ---------- Page mgmt ---------- */
+.page{display:none;animation:fadeIn .35s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ---------- Hero / Home ---------- */
+.hero{
+  position:relative;min-height:560px;display:flex;align-items:center;
+  background:linear-gradient(120deg,#08265c 0%,#0D47A1 45%,#146fc9 100%);
+  overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle at 85% 20%, rgba(66,165,245,.35), transparent 55%),
+    radial-gradient(circle at 100% 90%, rgba(38,166,154,.25), transparent 45%);
+}
+.hero-rail{
+  position:absolute;bottom:0;left:0;right:0;height:120px;opacity:.15;
+  background:repeating-linear-gradient(90deg,#fff 0 40px,transparent 40px 80px);
+}
+.hero-inner{position:relative;z-index:2;width:100%;padding:60px 0 40px;}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;}
+.hero-copy .eyebrow{color:var(--amber);font-weight:600;letter-spacing:.08em;font-size:13px;text-transform:uppercase;}
+.hero-copy h1{color:#fff;font-size:44px;line-height:1.25;margin:14px 0 14px;font-weight:600;}
+.hero-copy p{color:#cfe0f5;font-size:16px;line-height:1.7;max-width:460px;}
+.train-illustration{
+  height:260px;border-radius:20px;
+  background:linear-gradient(160deg,#123a7a,#1c5aa8);
+  position:relative;overflow:hidden;box-shadow:var(--shadow-lg);
+}
+.train-illustration .win{position:absolute;bottom:70px;height:38px;border-radius:6px;background:linear-gradient(160deg,#bfe3ff,#7fc4f2);}
+.train-illustration .body{position:absolute;bottom:20px;left:6%;right:6%;height:90px;background:linear-gradient(180deg,#eef6ff,#c7d9ee);border-radius:0 40px 12px 12px;}
+.train-illustration .nose{position:absolute;bottom:20px;right:4%;width:70px;height:90px;background:#e7f1fb;border-radius:0 60px 60px 0;}
+.train-illustration .track{position:absolute;bottom:0;left:0;right:0;height:16px;background:repeating-linear-gradient(90deg,#0a2c5c 0 18px,transparent 18px 34px);}
+
+.search-card{
+  position:relative;z-index:3;background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);
+  padding:26px;margin-top:-70px;
+}
+.trip-tabs{display:flex;gap:8px;margin-bottom:18px;}
+.trip-tabs button{
+  border:none;background:var(--bg);color:var(--ink-soft);font-weight:600;font-size:14px;
+  padding:10px 20px;border-radius:10px;
+}
+.trip-tabs button.active{background:var(--primary);color:#fff;}
+.search-fields{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:14px;align-items:end;}
+.field{display:flex;flex-direction:column;gap:6px;position:relative;}
+.field label{font-size:12.5px;color:var(--ink-soft);font-weight:600;}
+.field .input-wrap{
+  display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:10px;
+  padding:12px 14px;background:#fbfcfe;
+}
+.field .input-wrap:focus-within{border-color:var(--primary-light);background:#fff;}
+.field input,.field select{border:none;background:transparent;font-size:14.5px;width:100%;outline:none;color:var(--ink);font-family:inherit;}
+.icon{width:18px;height:18px;flex:none;color:var(--primary);}
+.swap-btn{
+  position:absolute;top:32px;right:-24px;width:34px;height:34px;border-radius:50%;
+  background:#fff;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--primary);
+}
+.features-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;padding:44px 0;}
+.feature{display:flex;gap:14px;align-items:flex-start;}
+.feature .ic{
+  width:46px;height:46px;border-radius:12px;background:#EAF2FD;color:var(--primary);
+  display:flex;align-items:center;justify-content:center;flex:none;
+}
+.feature h4{margin:0 0 4px;font-size:15.5px;}
+.feature p{margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.6;}
+
+/* ---------- Section shell for inner pages ---------- */
+.inner-page{padding:32px 0 72px;}
+.page-title{font-size:22px;font-weight:600;margin:0 0 6px;}
+.page-sub{color:var(--ink-soft);font-size:14px;margin:0 0 26px;}
+
+/* Steps */
+.stepper{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:32px;flex-wrap:wrap;}
+.step-item{display:flex;align-items:center;gap:10px;}
+.num-badge{
+  width:32px;height:32px;border-radius:50%;background:#DCE6F3;color:var(--ink-soft);
+  display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;
+}
+.step-item.done .num-badge{background:var(--teal);color:#fff;}
+.step-item.active .num-badge{background:var(--primary);color:#fff;}
+.step-label{font-size:13.5px;color:var(--ink-soft);font-weight:500;}
+.step-item.active .step-label{color:var(--primary);font-weight:600;}
+.step-connector{width:44px;height:2px;background:var(--line);}
+
+/* Search summary bar */
+.summary-bar{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px 22px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:var(--shadow);margin-bottom:20px;flex-wrap:wrap;
+}
+.route-pill{display:flex;align-items:center;gap:14px;font-weight:600;font-size:16px;}
+.route-pill .muted{font-weight:400;color:var(--ink-soft);font-size:13px;}
+.date-tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:20px;}
+.date-tab{
+  flex:none;border:1.5px solid var(--line);background:#fff;padding:10px 18px;border-radius:10px;font-size:13.5px;font-weight:500;color:var(--ink-soft);
+}
+.date-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+.train-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-bottom:16px;
+  display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap;box-shadow:var(--shadow);
+}
+.train-meta{display:flex;align-items:center;gap:22px;flex:1;min-width:260px;}
+.train-tag{background:#EAF2FD;color:var(--primary);font-size:12px;font-weight:600;padding:5px 10px;border-radius:7px;}
+.train-name{font-weight:600;font-size:15.5px;margin-bottom:4px;}
+.train-time{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:600;}
+.train-time .dur{font-size:12.5px;color:var(--ink-soft);font-weight:400;display:flex;flex-direction:column;align-items:center;}
+.train-time .line{width:60px;height:2px;background:var(--line);position:relative;}
+.train-time .line::after{content:"→";position:absolute;right:-4px;top:-9px;color:var(--ink-soft);font-size:12px;}
+.class-list{display:flex;gap:10px;flex-wrap:wrap;}
+.class-pill{
+  border:1px solid var(--line);border-radius:10px;padding:8px 14px;text-align:center;min-width:96px;
+}
+.class-pill .cn{font-size:12px;color:var(--ink-soft);}
+.class-pill .cp{font-weight:700;color:var(--primary);font-size:15px;}
+.class-pill .seats{font-size:11px;color:var(--teal);}
+
+/* seat page */
+.seat-layout{display:grid;grid-template-columns:1fr 340px;gap:22px;}
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);}
+.coach-select{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.coach-chip{border:1.5px solid var(--line);border-radius:10px;padding:12px 16px;min-width:120px;text-align:left;background:#fff;}
+.coach-chip .cc-name{font-size:13px;font-weight:600;}
+.coach-chip .cc-price{font-size:13px;color:var(--primary);font-weight:700;}
+.coach-chip.selected{border-color:var(--primary);background:#EAF2FD;}
+.seat-map{display:grid;grid-template-columns:repeat(5,44px);gap:10px;justify-content:center;margin:18px auto;}
+.seat-row-num{display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--ink-soft);}
+.seat{
+  width:44px;height:44px;border-radius:9px;border:1.5px solid #BEE3D4;background:#EAF8F1;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--teal);
+}
+.seat.gap{border:none;background:transparent;}
+.seat.taken{background:#EDEFF2;border-color:#D9DDE3;color:#B7BEC7;cursor:not-allowed;}
+.seat.selected{background:var(--primary);border-color:var(--primary);color:#fff;}
+.seat:not(.taken):not(.gap):hover{border-color:var(--primary-light);}
+.legend{display:flex;gap:18px;margin-top:14px;font-size:12.5px;color:var(--ink-soft);flex-wrap:wrap;}
+.legend span{display:flex;align-items:center;gap:6px;}
+.legend i{width:16px;height:16px;border-radius:4px;display:inline-block;}
+.legend .l-free i{background:#EAF8F1;border:1.5px solid #BEE3D4;}
+.legend .l-sel i{background:var(--primary);}
+.legend .l-taken i{background:#EDEFF2;border:1.5px solid #D9DDE3;}
+
+.sidebar-summary h4{margin:0 0 14px;font-size:15px;}
+.sum-row{display:flex;justify-content:space-between;font-size:13.5px;padding:9px 0;border-bottom:1px dashed var(--line);color:var(--ink-soft);}
+.sum-row b{color:var(--ink);}
+.sum-total{display:flex;justify-content:space-between;align-items:center;margin:16px 0;padding-top:12px;border-top:1.5px solid var(--line);}
+.sum-total .amt{font-size:26px;font-weight:700;color:var(--primary);}
+.seat-chip-selected{display:inline-flex;align-items:center;gap:6px;background:#EAF2FD;color:var(--primary);border-radius:8px;padding:6px 10px;font-size:12.5px;font-weight:600;margin:4px 4px 0 0;}
+
+/* forms */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-grid.g3{grid-template-columns:1fr 1fr 1fr;}
+.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field label{font-size:13px;font-weight:600;color:var(--ink-soft);}
+.form-field input,.form-field select{
+  border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;font-size:14.5px;font-family:inherit;outline:none;background:#fbfcfe;
+}
+.form-field input:focus,.form-field select:focus{border-color:var(--primary-light);background:#fff;}
+.passenger-block{border:1px dashed var(--line);border-radius:12px;padding:18px;margin-bottom:18px;}
+.passenger-block h4{margin:0 0 14px;font-size:14.5px;color:var(--primary);}
+
+/* payment */
+.pay-methods{display:flex;flex-direction:column;gap:12px;}
+.pay-option{
+  display:flex;align-items:center;gap:14px;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;
+}
+.pay-option.selected{border-color:var(--primary);background:#EAF2FD;}
+.pay-option .ic{width:38px;height:38px;border-radius:9px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex:none;color:var(--primary);}
+.pay-option .pt-name{font-weight:600;font-size:14.5px;}
+.pay-option .pt-sub{font-size:12px;color:var(--ink-soft);}
+.pay-option input{margin-left:auto;width:18px;height:18px;accent-color:var(--primary);}
+
+/* e-ticket */
+.ticket-wrap{max-width:480px;margin:0 auto;}
+.ticket{background:linear-gradient(160deg,#0D2F6B,#0D47A1);color:#fff;border-radius:18px;padding:26px;position:relative;box-shadow:var(--shadow-lg);}
+.ticket .tk-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.ticket .tk-status{background:rgba(38,166,154,.25);color:#7ee6c8;font-size:12px;font-weight:600;padding:5px 12px;border-radius:8px;}
+.ticket .tk-route{display:flex;justify-content:space-between;align-items:center;margin:20px 0;}
+.ticket .tk-route .st{font-size:19px;font-weight:700;}
+.ticket .tk-route .arrow{color:#9ec5f2;}
+.ticket .tk-time{font-size:13px;color:#cfe0f5;margin-top:4px;}
+.ticket-cut{border-top:2px dashed rgba(255,255,255,.3);margin:20px 0;position:relative;}
+.ticket-cut::before,.ticket-cut::after{content:"";position:absolute;top:-13px;width:26px;height:26px;border-radius:50%;background:var(--bg);}
+.ticket-cut::before{left:-38px;}
+.ticket-cut::after{right:-38px;}
+.qr-box{
+  width:150px;height:150px;margin:0 auto 12px;background:#fff;border-radius:12px;padding:10px;
+  display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(7,1fr);gap:3px;
+}
+.qr-box i{background:#0D2F6B;border-radius:1px;}
+.qr-box i.off{background:transparent;}
+.ticket .tk-info{display:flex;justify-content:space-between;font-size:12.5px;color:#cfe0f5;}
+.ticket .tk-info b{display:block;color:#fff;font-size:14px;margin-top:2px;}
+.ticket-actions{display:flex;gap:12px;margin-top:22px;}
+
+/* history */
+.hist-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.hist-tab{border:1.5px solid var(--line);background:#fff;padding:9px 18px;border-radius:10px;font-size:13.5px;font-weight:500;color:var(--ink-soft);}
+.hist-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.hist-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px 22px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:var(--shadow);}
+.hist-id{font-size:12px;color:var(--ink-soft);}
+.badge{font-size:12px;font-weight:600;padding:5px 12px;border-radius:8px;}
+.badge.ok{background:#E4F6EC;color:var(--ok);}
+.badge.wait{background:#FFF4E0;color:#B9740A;}
+.badge.cancel{background:#FBE7E7;color:var(--danger);}
+
+/* auth pages */
+.auth-split{display:grid;grid-template-columns:1fr 1fr;min-height:640px;border-radius:20px;overflow:hidden;box-shadow:var(--shadow-lg);margin:32px 0 64px;}
+.auth-visual{background:linear-gradient(160deg,#08265c,#1c5aa8);color:#fff;padding:48px 42px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;}
+.auth-visual h2{font-size:28px;line-height:1.35;margin:0 0 12px;}
+.auth-visual>p{color:#cfe0f5;font-size:14.5px;margin-bottom:34px;}
+.auth-feature{display:flex;gap:14px;margin-bottom:22px;align-items:flex-start;}
+.auth-feature .ic{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex:none;}
+.auth-feature h5{margin:0 0 4px;font-size:14.5px;}
+.auth-feature p{margin:0;font-size:12.5px;color:#cfe0f5;}
+.auth-form{background:#fff;padding:48px 46px;display:flex;flex-direction:column;justify-content:center;}
+.auth-form h2{margin:0 0 8px;font-size:24px;}
+.auth-form>p.sub{color:var(--ink-soft);font-size:14px;margin:0 0 26px;}
+.divider-or{display:flex;align-items:center;gap:14px;color:var(--ink-soft);font-size:12.5px;margin:22px 0;}
+.divider-or::before,.divider-or::after{content:"";flex:1;height:1px;background:var(--line);}
+.social-row{display:flex;flex-direction:column;gap:10px;}
+.social-btn{display:flex;align-items:center;justify-content:center;gap:10px;border:1.5px solid var(--line);border-radius:10px;padding:11px;font-size:14px;font-weight:500;background:#fff;}
+.auth-switch{text-align:center;margin-top:22px;font-size:14px;color:var(--ink-soft);}
+.auth-switch a{color:var(--primary);font-weight:600;}
+.checkbox-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);margin:6px 0 4px;}
+
+.empty-note{background:#fff;border:1px dashed var(--line);border-radius:var(--radius);padding:40px;text-align:center;color:var(--ink-soft);}
+
+/* toast */
+.toast{
+  position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;padding:13px 22px;border-radius:10px;font-size:14px;
+  opacity:0;pointer-events:none;transition:.25s;z-index:200;box-shadow:var(--shadow-lg);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+footer{background:#0B1E3E;color:#B9CBE6;padding:34px 0;margin-top:40px;text-align:center;font-size:13px;}
+
+@media (max-width:960px){
+  nav.main-nav{display:none;}
+  .hero-grid{grid-template-columns:1fr;}
+  .search-fields{grid-template-columns:1fr;}
+  .features-strip{grid-template-columns:1fr 1fr;}
+  .seat-layout{grid-template-columns:1fr;}
+  .auth-split{grid-template-columns:1fr;}
+  .auth-visual{display:none;}
+  .form-grid,.form-grid.g3{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-row">
+    <div class="brand" onclick="showPage('home')" style="cursor:pointer">
+      <span class="logo-icon">🚆</span>
+      <span>TrainBook<br><small>ONLINE TRAIN TICKET BOOKING</small></span>
+    </div>
+    <nav class="main-nav">
+      <a onclick="showPage('home')" class="nav-link active" data-p="home">หน้าแรก</a>
+      <a onclick="showPage('results')" class="nav-link" data-p="results">ค้นหาตั๋ว</a>
+      <a onclick="showPage('history')" class="nav-link" data-p="history">ตรวจสอบการจอง</a>
+      <a onclick="showPage('home')" class="nav-link">เกี่ยวกับเรา</a>
+      <a onclick="showPage('home')" class="nav-link">ติดต่อเรา</a>
+    </nav>
+    <div class="header-actions">
+      <div id="guestActions" style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" onclick="showPage('login')">เข้าสู่ระบบ</button>
+        <button class="btn btn-primary" onclick="showPage('register')">สมัครสมาชิก</button>
+      </div>
+      <div id="userChip" class="user-chip">
+        <div class="avatar" id="userAvatar" onclick="showPage('history')">สจ</div>
+        <span id="userName" onclick="showPage('history')">สมชาย ใจดี</span>
+        <button class="btn btn-ghost" style="padding:6px 12px;font-size:13px;margin-left:6px;" onclick="doLogout()">ออกจากระบบ</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HOME ================= -->
+<section class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-rail"></div>
+    <div class="container hero-inner">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">TRAINBOOK · ระบบจองตั๋วรถไฟออนไลน์</div>
+          <h1>เดินทางง่าย จองตั๋วรถไฟ<br>สะดวก รวดเร็ว ปลอดภัย</h1>
+          <p>จองตั๋วรถไฟออนไลน์ได้ทุกเส้นทาง ทุกที่ทุกเวลา พร้อมเลือกที่นั่งและรับ E-Ticket ทันทีหลังชำระเงิน</p>
+        </div>
+        <div class="train-illustration">
+          <div class="win" style="left:12%;width:70px;"></div>
+          <div class="win" style="left:30%;width:70px;"></div>
+          <div class="win" style="left:48%;width:70px;"></div>
+          <div class="body"></div>
+          <div class="nose"></div>
+          <div class="track"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="search-card">
+      <div class="trip-tabs">
+        <button class="active" id="tabOneway" onclick="setTripType('oneway')">เที่ยวเดียว</button>
+        <button id="tabRound" onclick="setTripType('round')">ไป-กลับ</button>
+      </div>
+      <div class="search-fields">
+        <div class="field" style="position:relative;">
+          <label>ต้นทาง</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"></circle><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"></path></svg>
+            <select id="fromCity">
+              <option>กรุงเทพฯ (หัวลำโพง)</option>
+              <option>เชียงใหม่</option>
+              <option>พิษณุโลก</option>
+              <option>ขอนแก่น</option>
+            </select>
+          </div>
+          <button class="swap-btn" onclick="swapCities()" title="สลับต้นทาง-ปลายทาง">⇄</button>
+        </div>
+        <div class="field">
+          <label>ปลายทาง</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"></path></svg>
+            <select id="toCity">
+              <option>เชียงใหม่</option>
+              <option>กรุงเทพฯ (หัวลำโพง)</option>
+              <option>พิษณุโลก</option>
+              <option>ขอนแก่น</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>วันเดินทาง</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+            <input type="date" id="travelDate" value="2024-05-27">
+          </div>
+        </div>
+        <div class="field" style="min-width:160px;">
+          <label>ผู้โดยสาร</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>
+            <select id="paxCount">
+              <option value="1">ผู้ใหญ่ 1</option>
+              <option value="2">ผู้ใหญ่ 2</option>
+              <option value="3">ผู้ใหญ่ 3</option>
+              <option value="4">ผู้ใหญ่ 4</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:20px;">
+        <button class="btn btn-primary btn-lg" style="width:220px;" onclick="doSearch()">🔍 ค้นหาเที่ยวรถ</button>
+      </div>
+    </div>
+
+    <div class="features-strip">
+      <div class="feature"><div class="ic">🎫</div><div><h4>จองง่าย</h4><p>จองตั๋วรถไฟออนไลน์ได้ทุกที่ทุกเวลา</p></div></div>
+      <div class="feature"><div class="ic">🔒</div><div><h4>ชำระปลอดภัย</h4><p>ระบบชำระเงินได้มาตรฐานสากล</p></div></div>
+      <div class="feature"><div class="ic">📱</div><div><h4>ตั๋วอิเล็กทรอนิกส์</h4><p>รับ QR Code ได้ทันทีหลังชำระเงิน</p></div></div>
+      <div class="feature"><div class="ic">🕑</div><div><h4>บริการตลอด 24 ชม.</h4><p>พร้อมดูแลลูกค้าตลอดเวลา</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESULTS ================= -->
+<section class="page" id="page-results">
+  <div class="container inner-page">
+    <div class="summary-bar">
+      <div class="route-pill">
+        <span id="rsFrom">กรุงเทพฯ (หัวลำโพง)</span>
+        <span style="color:var(--primary)">→</span>
+        <span id="rsTo">เชียงใหม่</span>
+        <span class="muted" id="rsDate">27 พฤษภาคม 2567</span>
+      </div>
+      <button class="btn btn-ghost" onclick="showPage('home')">✏️ เปลี่ยนการค้นหา</button>
+    </div>
+
+    <div class="date-tabs" id="dateTabs"></div>
+
+    <div id="trainList"></div>
+  </div>
+</section>
+
+<!-- ================= SEATS ================= -->
+<section class="page" id="page-seats">
+  <div class="container inner-page">
+    <div class="stepper">
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">เลือกเที่ยวรถ</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item active"><div class="num-badge">2</div><div class="step-label">เลือกที่นั่ง</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item"><div class="num-badge">3</div><div class="step-label">ข้อมูลผู้โดยสาร</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item"><div class="num-badge">4</div><div class="step-label">ชำระเงิน</div></div>
+    </div>
+
+    <div class="seat-layout">
+      <div class="panel">
+        <h3 style="margin-top:0" id="seatTrainTitle">ขบวน 9 (ด่วนพิเศษ) · กรุงเทพฯ (หัวลำโพง) → เชียงใหม่</h3>
+        <p class="page-sub" style="margin-bottom:18px" id="seatTrainTime">27 พ.ค. 2567 | 18:10 - 07:15</p>
+
+        <div style="font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:10px;">เลือกชั้นโดยสาร</div>
+        <div class="coach-select" id="coachSelect"></div>
+
+        <div class="seat-map" id="seatMap"></div>
+
+        <div class="legend">
+          <span class="l-free"><i></i> ว่าง</span>
+          <span class="l-sel"><i></i> เลือกแล้ว</span>
+          <span class="l-taken"><i></i> ไม่ว่าง</span>
+        </div>
+      </div>
+
+      <div class="panel sidebar-summary">
+        <h4>ที่นั่งที่เลือก</h4>
+        <div id="chosenSeats" style="min-height:34px;">ยังไม่ได้เลือกที่นั่ง</div>
+        <div class="sum-total">
+          <span>ราคารวม</span>
+          <span class="amt" id="seatTotal">0 บาท</span>
+        </div>
+        <button class="btn btn-primary btn-block btn-lg" onclick="goPassengerPage()">ถัดไป</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PASSENGER INFO ================= -->
+<section class="page" id="page-passenger">
+  <div class="container inner-page">
+    <div class="stepper">
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">เลือกเที่ยวรถ</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">เลือกที่นั่ง</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item active"><div class="num-badge">3</div><div class="step-label">ข้อมูลผู้โดยสาร</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item"><div class="num-badge">4</div><div class="step-label">ชำระเงิน</div></div>
+    </div>
+
+    <div class="panel" style="max-width:820px;margin:0 auto;">
+      <h3 style="margin-top:0">ข้อมูลผู้โดยสาร</h3>
+      <div id="passengerForms"></div>
+
+      <div style="background:var(--bg);border-radius:12px;padding:16px 18px;margin-top:6px;">
+        <div style="font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:8px;">ข้อมูลการเดินทาง</div>
+        <div style="font-size:14px;" id="passengerTripInfo"></div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:22px;">
+        <button class="btn btn-ghost" onclick="showPage('seats')">← ย้อนกลับ</button>
+        <button class="btn btn-primary" style="flex:1" onclick="goPaymentPage()">ถัดไป</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PAYMENT ================= -->
+<section class="page" id="page-payment">
+  <div class="container inner-page">
+    <div class="stepper">
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">เลือกเที่ยวรถ</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">เลือกที่นั่ง</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">ข้อมูลผู้โดยสาร</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item active"><div class="num-badge">4</div><div class="step-label">ชำระเงิน</div></div>
+    </div>
+
+    <div class="seat-layout">
+      <div class="panel">
+        <h3 style="margin-top:0">เลือกวิธีชำระเงิน</h3>
+        <div class="pay-methods" id="payMethods">
+          <label class="pay-option selected"><div class="ic">💳</div><div><div class="pt-name">บัตรเครดิต / เดบิต</div><div class="pt-sub">Visa, Mastercard, JCB</div></div><input type="radio" name="pm" checked></label>
+          <label class="pay-option"><div class="ic">🏦</div><div><div class="pt-name">Mobile Banking</div><div class="pt-sub">ธนาคารชั้นนำทุกแห่ง</div></div><input type="radio" name="pm"></label>
+          <label class="pay-option"><div class="ic">🔳</div><div><div class="pt-name">QR Code PromptPay</div><div class="pt-sub">สแกนจ่ายผ่านแอปธนาคาร</div></div><input type="radio" name="pm"></label>
+          <label class="pay-option"><div class="ic">👛</div><div><div class="pt-name">e-Wallet</div><div class="pt-sub">TrueMoney, ShopeePay, LINE Pay</div></div><input type="radio" name="pm"></label>
+        </div>
+      </div>
+
+      <div class="panel sidebar-summary">
+        <h4>สรุปการจอง</h4>
+        <div id="paySummary"></div>
+        <div class="sum-total">
+          <span>ยอดชำระทั้งหมด</span>
+          <span class="amt" id="payTotal">0 บาท</span>
+        </div>
+        <button class="btn btn-primary btn-block btn-lg" onclick="doPayment()">💳 ชำระเงิน</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= E-TICKET ================= -->
+<section class="page" id="page-eticket">
+  <div class="container inner-page">
+    <div style="text-align:center;margin-bottom:22px;">
+      <div style="font-size:44px;">✅</div>
+      <h2 style="margin:8px 0 4px;">จองสำเร็จ! ขอบคุณที่ใช้บริการ TrainBook</h2>
+      <p class="page-sub">ตั๋วอิเล็กทรอนิกส์ของคุณพร้อมใช้งานแล้ว กรุณาแสดง QR Code นี้ก่อนขึ้นรถไฟ</p>
+    </div>
+
+    <div class="ticket-wrap">
+      <div class="ticket">
+        <div class="tk-top">
+          <div>
+            <div style="font-weight:700;font-size:16px;">🚆 การรถไฟแห่งประเทศไทย</div>
+            <div style="font-size:11.5px;color:#cfe0f5;">State Railway of Thailand</div>
+          </div>
+          <div class="tk-status">จองสำเร็จ</div>
+        </div>
+        <div style="font-size:11.5px;color:#cfe0f5;">รหัสการจอง (Booking ID)</div>
+        <div style="font-weight:700;font-size:17px;letter-spacing:.03em;" id="tkBookingId">TRN670S270001</div>
+
+        <div class="tk-route">
+          <div class="st" id="tkFrom">กรุงเทพฯ (หัวลำโพง)</div>
+          <div class="arrow">✈</div>
+          <div class="st" id="tkTo">เชียงใหม่</div>
+        </div>
+        <div class="tk-time" id="tkDateTime">27 พ.ค. 2567 | 18:10 → 07:15</div>
+
+        <div class="ticket-cut"></div>
+
+        <div class="qr-box" id="qrBox"></div>
+        <div style="text-align:center;font-size:11.5px;color:#cfe0f5;margin-bottom:16px;">แสดง QR Code นี้ก่อนขึ้นรถไฟ</div>
+
+        <div class="tk-info">
+          <div>ผู้โดยสาร<b id="tkPax">1 คน</b></div>
+          <div>ที่นั่ง<b id="tkSeat">ตู้ 2 · 5A</b></div>
+          <div>ราคารวม<b id="tkPrice">850 บาท</b></div>
+        </div>
+      </div>
+      <div class="ticket-actions">
+        <button class="btn btn-ghost btn-block" onclick="alert('กำลังดาวน์โหลดไฟล์ PDF...')">⬇ ดาวน์โหลด PDF</button>
+        <button class="btn btn-ghost btn-block" onclick="alert('ส่งอีเมลตั๋วเรียบร้อยแล้ว')">✉ ส่งอีเมล</button>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" style="margin-top:14px;" onclick="showPage('history')">ไปที่ประวัติการจอง</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HISTORY ================= -->
+<section class="page" id="page-history">
+  <div class="container inner-page">
+    <h2 class="page-title">ประวัติการจอง</h2>
+    <p class="page-sub">ตรวจสอบสถานะและรายละเอียดการจองตั๋วของคุณ</p>
+
+    <div class="hist-tabs">
+      <button class="hist-tab active" onclick="setHistoryFilter('all',this)">ทั้งหมด</button>
+      <button class="hist-tab" onclick="setHistoryFilter('wait',this)">รอชำระเงิน</button>
+      <button class="hist-tab" onclick="setHistoryFilter('ok',this)">ชำระแล้ว</button>
+      <button class="hist-tab" onclick="setHistoryFilter('cancel',this)">ยกเลิก</button>
+    </div>
+
+    <div id="historyList"></div>
+  </div>
+</section>
+
+<!-- ================= LOGIN ================= -->
+<section class="page" id="page-login">
+  <div class="container">
+    <div class="auth-split">
+      <div class="auth-visual">
+        <div class="brand" style="color:#fff;margin-bottom:34px;"><span class="logo-icon" style="background:rgba(255,255,255,.15)">🚆</span><span>TrainBook<br><small style="color:#cfe0f5">ONLINE TRAIN TICKET BOOKING</small></span></div>
+        <h2>ยินดีต้อนรับ<br>กลับเข้าสู่ระบบ</h2>
+        <p>เข้าสู่ระบบเพื่อจองตั๋วรถไฟออนไลน์ของคุณได้ทันที</p>
+        <div class="auth-feature"><div class="ic">🎫</div><div><h5>จองตั๋วได้ง่ายและรวดเร็ว</h5><p>เพียงไม่กี่ขั้นตอน</p></div></div>
+        <div class="auth-feature"><div class="ic">🕘</div><div><h5>ตรวจสอบการเดินทาง</h5><p>เช็กประวัติการจองได้ตลอดเวลา</p></div></div>
+        <div class="auth-feature"><div class="ic">🏷️</div><div><h5>รับสิทธิพิเศษและโปรโมชั่น</h5><p>สำหรับสมาชิกเท่านั้น</p></div></div>
+      </div>
+      <div class="auth-form">
+        <h2>เข้าสู่ระบบ</h2>
+        <p class="sub">กรอกอีเมลและรหัสผ่านเพื่อเข้าสู่ระบบ</p>
+        <div class="form-field" style="margin-bottom:14px;"><label>อีเมล</label><input id="loginEmail" type="email" placeholder="กรอกอีเมล"></div>
+        <div class="form-field"><label>รหัสผ่าน</label><input id="loginPassword" type="password" placeholder="กรอกรหัสผ่าน"></div>
+        <div class="checkbox-row"><input type="checkbox" id="rememberMe"><label for="rememberMe">จดจำฉันไว้ในระบบ</label> <span style="margin-left:auto;color:var(--primary);cursor:pointer;">ลืมรหัสผ่าน?</span></div>
+        <button class="btn btn-primary btn-block btn-lg" style="margin-top:14px;" onclick="doLogin()">เข้าสู่ระบบ</button>
+        <div class="divider-or">หรือเข้าสู่ระบบด้วย</div>
+        <div class="social-row">
+          <button class="social-btn">🟢 เข้าสู่ระบบด้วย Google</button>
+          <button class="social-btn">🔵 เข้าสู่ระบบด้วย Facebook</button>
+        </div>
+        <div class="auth-switch">ยังไม่มีบัญชี? <a onclick="showPage('register')">สมัครสมาชิก</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= REGISTER ================= -->
+<section class="page" id="page-register">
+  <div class="container">
+    <div class="auth-split">
+      <div class="auth-visual">
+        <div class="brand" style="color:#fff;margin-bottom:34px;"><span class="logo-icon" style="background:rgba(255,255,255,.15)">🚆</span><span>TrainBook<br><small style="color:#cfe0f5">ONLINE TRAIN TICKET BOOKING</small></span></div>
+        <h2>สมัครสมาชิก<br>สร้างบัญชีของคุณ</h2>
+        <p>สมัครสมาชิกเพื่อจองตั๋วรถไฟออนไลน์สะดวก รวดเร็ว ปลอดภัย ได้ทุกที่ทุกเวลา</p>
+        <div class="auth-feature"><div class="ic">🎫</div><div><h5>จองตั๋วได้ทุกที่</h5><p>จองตั๋วรถไฟออนไลน์ได้ทุกที่ ทุกเวลา</p></div></div>
+        <div class="auth-feature"><div class="ic">💺</div><div><h5>เลือกที่นั่งได้ง่าย</h5><p>เลือกที่นั่งที่คุณต้องการแบบเรียลไทม์</p></div></div>
+        <div class="auth-feature"><div class="ic">🔔</div><div><h5>แจ้งเตือนทันที</h5><p>รับการแจ้งเตือนสถานะการจองผ่านอีเมลหรือ SMS</p></div></div>
+      </div>
+      <div class="auth-form">
+        <h2>สมัครสมาชิก</h2>
+        <p class="sub">กรอกข้อมูลเพื่อสร้างบัญชีใหม่</p>
+        <div class="form-grid" style="margin-bottom:14px;">
+          <div class="form-field"><label>ชื่อ - นามสกุล</label><input id="regName" placeholder="กรอกชื่อ - นามสกุล"></div>
+          <div class="form-field"><label>อีเมล</label><input id="regEmail" type="email" placeholder="กรอกอีเมล"></div>
+        </div>
+        <div class="form-field" style="margin-bottom:14px;"><label>เบอร์โทรศัพท์</label><input id="regPhone" placeholder="กรอกเบอร์โทรศัพท์"></div>
+        <div class="form-grid">
+          <div class="form-field"><label>รหัสผ่าน</label><input id="regPassword" type="password" placeholder="ตั้งรหัสผ่าน (อย่างน้อย 6 ตัวอักษร)"></div>
+          <div class="form-field"><label>ยืนยันรหัสผ่าน</label><input id="regPasswordConfirm" type="password" placeholder="ยืนยันรหัสผ่าน"></div>
+        </div>
+        <div class="checkbox-row" style="margin-top:12px;"><input type="checkbox" id="agreeTerms"><label for="agreeTerms">ฉันยอมรับ ข้อกำหนดและเงื่อนไข และนโยบายความเป็นส่วนตัว</label></div>
+        <button class="btn btn-primary btn-block btn-lg" style="margin-top:8px;" onclick="doRegister()">สมัครสมาชิก</button>
+        <div class="divider-or">หรือสมัครด้วย</div>
+        <div class="social-row">
+          <button class="social-btn">🟢 สมัครด้วย Google</button>
+          <button class="social-btn">🔵 สมัครด้วย Facebook</button>
+        </div>
+        <div class="auth-switch">มีบัญชีอยู่แล้ว? <a onclick="showPage('login')">เข้าสู่ระบบ</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>© 2024-2026 TrainBook — ระบบจองตั๋วรถไฟออนไลน์ สงวนลิขสิทธิ์ทุกประการ</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- App state ---------------- */
+const state = {
+  from:'กรุงเทพฯ (หัวลำโพง)', to:'เชียงใหม่', date:'27 พ.ค. 2567', pax:1,
+  train:null, coach:null, seats:[], passengers:[]
+};
+
+const TRAINS = [
+  {id:9,  tag:'ด่วนพิเศษ', dep:'18:10', arr:'07:15', dur:'13 ชม. 05 นาที', classes:[{name:'ชั้น 1',price:1250,seats:16},{name:'ชั้น 2 (นั่งนอน)',price:850,seats:42},{name:'ชั้น 2',price:250,seats:60}]},
+  {id:13, tag:'ด่วน', dep:'20:05', arr:'08:40', dur:'12 ชม. 35 นาที', classes:[{name:'ชั้น 1',price:1150,seats:10},{name:'ชั้น 2 (นั่งนอน)',price:750,seats:38},{name:'ชั้น 2',price:750,seats:55}]},
+  {id:51, tag:'ธรรมดา', dep:'07:30', arr:'19:40', dur:'12 ชม. 10 นาที', classes:[{name:'ชั้น 3',price:600,seats:80}]},
+  {id:67, tag:'ธรรมดา', dep:'15:40', arr:'03:50', dur:'12 ชม. 10 นาที', classes:[{name:'ชั้น 3',price:600,seats:80}]},
+];
+
+const DATES = ['25 พ.ค.','26 พ.ค.','27 พ.ค.','28 พ.ค.','29 พ.ค.','30 พ.ค.'];
+
+/* ---------------- Persistent storage (localStorage) ---------------- */
+const DB = {
+  read(key, fallback){
+    try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+    catch(e){ return fallback; }
+  },
+  write(key, val){
+    try{ localStorage.setItem(key, JSON.stringify(val)); return true; }
+    catch(e){ toast('บันทึกข้อมูลไม่สำเร็จ (เบราว์เซอร์ปิด storage)'); return false; }
+  }
+};
+const K_USERS='tb_users', K_SESSION='tb_session', K_BOOKINGS='tb_bookings';
+
+function getUsers(){ return DB.read(K_USERS, []); }
+function saveUsers(u){ DB.write(K_USERS, u); }
+function currentUser(){ return DB.read(K_SESSION, null); }
+function setSession(u){ if(u) DB.write(K_SESSION, u); else localStorage.removeItem(K_SESSION); }
+
+function getBookings(){ return DB.read(K_BOOKINGS, []); }
+function saveBookings(b){ DB.write(K_BOOKINGS, b); }
+
+function initials(name){
+  const parts = (name||'').trim().split(/\s+/);
+  if(!parts[0]) return 'ผู้';
+  return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+}
+
+/* ---------------- Navigation ---------------- */
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(a=>a.classList.toggle('active', a.dataset.p===name));
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(name==='history') renderHistory();
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+function setTripType(type){
+  document.getElementById('tabOneway').classList.toggle('active', type==='oneway');
+  document.getElementById('tabRound').classList.toggle('active', type==='round');
+}
+function swapCities(){
+  const f=document.getElementById('fromCity'), t=document.getElementById('toCity');
+  const tmp=f.value; f.value=t.value; t.value=tmp;
+}
+
+/* ---------------- Search / Results ---------------- */
+function doSearch(){
+  state.from = document.getElementById('fromCity').value;
+  state.to = document.getElementById('toCity').value;
+  state.pax = parseInt(document.getElementById('paxCount').value,10);
+  const d = document.getElementById('travelDate').value;
+  if(d){
+    const dt=new Date(d+'T00:00:00');
+    const months=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    state.date = dt.getDate()+' '+months[dt.getMonth()]+' '+(dt.getFullYear()+543);
+  }
+  document.getElementById('rsFrom').textContent = state.from;
+  document.getElementById('rsTo').textContent = state.to;
+  document.getElementById('rsDate').textContent = state.date;
+  renderDateTabs();
+  renderTrainList();
+  showPage('results');
+}
+
+function renderDateTabs(){
+  const wrap = document.getElementById('dateTabs');
+  wrap.innerHTML='';
+  DATES.forEach((d,i)=>{
+    const b=document.createElement('button');
+    b.className='date-tab'+(i===2?' active':'');
+    b.textContent=d;
+    b.onclick=()=>{document.querySelectorAll('.date-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');};
+    wrap.appendChild(b);
+  });
+}
+
+function renderTrainList(){
+  const wrap=document.getElementById('trainList');
+  wrap.innerHTML='';
+  TRAINS.forEach(tr=>{
+    const card=document.createElement('div');
+    card.className='train-card';
+    card.innerHTML=`
+      <div class="train-meta">
+        <div>
+          <span class="train-tag">${tr.tag}</span>
+          <div class="train-name" style="margin-top:6px;">ขบวน ${tr.id}</div>
+          <div style="font-size:12.5px;color:var(--ink-soft);">${state.from} → ${state.to}</div>
+        </div>
+        <div class="train-time">
+          <span>${tr.dep}</span>
+          <span class="dur"><span class="line"></span>${tr.dur}</span>
+          <span>${tr.arr}</span>
+        </div>
+      </div>
+      <div class="class-list">
+        ${tr.classes.map(c=>`
+          <div class="class-pill">
+            <div class="cn">${c.name}</div>
+            <div class="cp">${c.price.toLocaleString()} บาท</div>
+            <div class="seats">เหลือ ${c.seats}</div>
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-primary" onclick='selectTrain(${tr.id})'>เลือกที่นั่ง</button>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+/* ---------------- Seats ---------------- */
+function selectTrain(id){
+  state.train = TRAINS.find(t=>t.id===id);
+  state.coach = 0;
+  state.seats = [];
+  document.getElementById('seatTrainTitle').textContent = `ขบวน ${state.train.id} (${state.train.tag}) · ${state.from} → ${state.to}`;
+  document.getElementById('seatTrainTime').textContent = `${state.date} | ${state.train.dep} - ${state.train.arr}`;
+  renderCoachSelect();
+  renderSeatMap();
+  updateSeatSidebar();
+  showPage('seats');
+}
+
+function renderCoachSelect(){
+  const wrap=document.getElementById('coachSelect');
+  wrap.innerHTML='';
+  state.train.classes.forEach((c,i)=>{
+    const btn=document.createElement('button');
+    btn.className='coach-chip'+(i===state.coach?' selected':'');
+    btn.innerHTML=`<div class="cc-name">${c.name}</div><div class="cc-price">${c.price.toLocaleString()} บาท</div>`;
+    btn.onclick=()=>{ state.coach=i; state.seats=[]; renderCoachSelect(); renderSeatMap(); updateSeatSidebar(); };
+    wrap.appendChild(btn);
+  });
+}
+
+function renderSeatMap(){
+  const wrap=document.getElementById('seatMap');
+  wrap.innerHTML='';
+  const cols=['A','C','gap','D','F'];
+  const takenSeed = [ '2A','3D','4C','6F','1F' ];
+  for(let row=1; row<=8; row++){
+    cols.forEach(col=>{
+      if(col==='gap'){
+        const g=document.createElement('div'); g.className='seat gap'; wrap.appendChild(g); return;
+      }
+      const code = row+col;
+      const seat=document.createElement('div');
+      const isTaken = takenSeed.includes(code);
+      seat.className='seat'+(isTaken?' taken':'')+(state.seats.includes(code)?' selected':'');
+      seat.textContent=code;
+      if(!isTaken){
+        seat.onclick=()=>toggleSeat(code);
+      }
+      wrap.appendChild(seat);
+    });
+  }
+}
+
+function toggleSeat(code){
+  const i=state.seats.indexOf(code);
+  if(i>-1){ state.seats.splice(i,1); }
+  else{
+    if(state.seats.length>=state.pax){ toast(`เลือกได้สูงสุด ${state.pax} ที่นั่งตามจำนวนผู้โดยสาร`); return; }
+    state.seats.push(code);
+  }
+  renderSeatMap();
+  updateSeatSidebar();
+}
+
+function updateSeatSidebar(){
+  const c = state.train.classes[state.coach];
+  const box=document.getElementById('chosenSeats');
+  box.innerHTML = state.seats.length
+    ? state.seats.map(s=>`<span class="seat-chip-selected">${c.name.split(' ')[0]} · ${s}</span>`).join('')
+    : 'ยังไม่ได้เลือกที่นั่ง';
+  document.getElementById('seatTotal').textContent = (state.seats.length*c.price).toLocaleString()+' บาท';
+}
+
+function goPassengerPage(){
+  if(state.seats.length===0){ toast('กรุณาเลือกที่นั่งอย่างน้อย 1 ที่นั่ง'); return; }
+  if(state.seats.length < state.pax){ toast(`กรุณาเลือกที่นั่งให้ครบ ${state.pax} ที่นั่ง`); return; }
+  renderPassengerForms();
+  showPage('passenger');
+}
+
+/* ---------------- Passenger ---------------- */
+function renderPassengerForms(){
+  const wrap=document.getElementById('passengerForms');
+  wrap.innerHTML='';
+  for(let i=0;i<state.pax;i++){
+    const block=document.createElement('div');
+    block.className='passenger-block';
+    block.innerHTML=`
+      <h4>ผู้โดยสารคนที่ ${i+1} ${state.seats[i]?'· ที่นั่ง '+state.seats[i]:''}</h4>
+      <div class="form-grid g3" style="margin-bottom:14px;">
+        <div class="form-field"><label>คำนำหน้า</label>
+          <select><option>นาย</option><option>นาง</option><option>นางสาว</option></select>
+        </div>
+        <div class="form-field"><label>ชื่อ</label><input placeholder="ชื่อจริง"></div>
+        <div class="form-field"><label>นามสกุล</label><input placeholder="นามสกุล"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field"><label>เลขบัตรประชาชน</label><input placeholder="1-2345-67890-12-3"></div>
+        <div class="form-field"><label>เบอร์โทรศัพท์</label><input placeholder="081-234-5678"></div>
+      </div>
+      <div class="form-field" style="margin-top:14px;"><label>อีเมล</label><input type="email" placeholder="somchai@example.com"></div>
+    `;
+    wrap.appendChild(block);
+  }
+  const c = state.train.classes[state.coach];
+  document.getElementById('passengerTripInfo').innerHTML = `
+    <b>ขบวน ${state.train.id}</b> (${state.train.tag}) &nbsp;|&nbsp; ${state.date} | ${state.train.dep} - ${state.train.arr}<br>
+    ${state.from} → ${state.to} &nbsp;|&nbsp; ตู้โดยสาร · ${c.name} · ที่นั่ง ${state.seats.join(', ')}
+  `;
+}
+
+/* ---------------- Payment ---------------- */
+function goPaymentPage(){
+  const c = state.train.classes[state.coach];
+  document.getElementById('paySummary').innerHTML=`
+    <div class="sum-row"><span>ขบวน</span><b>${state.train.id} (${state.train.tag})</b></div>
+    <div class="sum-row"><span>เส้นทาง</span><b>${state.from} → ${state.to}</b></div>
+    <div class="sum-row"><span>วันที่ / เวลา</span><b>${state.date} | ${state.train.dep} - ${state.train.arr}</b></div>
+    <div class="sum-row"><span>ผู้โดยสาร</span><b>${state.pax} คน</b></div>
+    <div class="sum-row"><span>ที่นั่ง (${c.name})</span><b>${state.seats.join(', ')}</b></div>
+  `;
+  document.getElementById('payTotal').textContent = (state.seats.length*c.price).toLocaleString()+' บาท';
+  showPage('payment');
+}
+
+document.getElementById('payMethods').addEventListener('click', e=>{
+  const opt = e.target.closest('.pay-option');
+  if(!opt) return;
+  document.querySelectorAll('.pay-option').forEach(o=>{o.classList.remove('selected'); o.querySelector('input').checked=false;});
+  opt.classList.add('selected');
+  opt.querySelector('input').checked=true;
+});
+
+function randomBookingId(){
+  return 'TRN'+Math.floor(600000+Math.random()*90000)+'S'+Math.floor(10000+Math.random()*89999);
+}
+
+function buildQR(){
+  const box=document.getElementById('qrBox');
+  box.innerHTML='';
+  for(let i=0;i<49;i++){
+    const cell=document.createElement('i');
+    const isCorner = (i<3||i%7<1)&&false;
+    if(Math.random()<0.42) cell.classList.add('off');
+    box.appendChild(cell);
+  }
+}
+
+function doPayment(){
+  const c = state.train.classes[state.coach];
+  const total = state.seats.length*c.price;
+  const u = currentUser();
+
+  // สร้างรายการจอง แล้วบันทึกลง localStorage (สถานะ: ชำระแล้ว)
+  const booking = {
+    id: randomBookingId(),
+    owner: u ? u.email : 'guest',
+    from: state.from,
+    to: state.to,
+    route: `${state.from} → ${state.to}`,
+    date: state.date,
+    trainId: state.train.id,
+    trainTag: state.train.tag,
+    dep: state.train.dep,
+    arr: state.train.arr,
+    time: `${state.train.dep} - ${state.train.arr}`,
+    className: c.name,
+    seats: state.seats.slice(),
+    pax: state.pax,
+    price: total,
+    status: 'ok',
+    createdAt: Date.now()
+  };
+  const all = getBookings();
+  all.unshift(booking);
+  saveBookings(all);
+
+  renderTicket(booking);
+  showPage('eticket');
+  toast('ชำระเงินสำเร็จ! บันทึกการจองแล้ว');
+}
+
+// แสดง E-Ticket จากข้อมูลการจองหนึ่งรายการ
+function renderTicket(b){
+  document.getElementById('tkBookingId').textContent = b.id;
+  document.getElementById('tkFrom').textContent = b.from;
+  document.getElementById('tkTo').textContent = b.to;
+  document.getElementById('tkDateTime').textContent = `${b.date} | ${b.dep} → ${b.arr}`;
+  document.getElementById('tkPax').textContent = b.pax+' คน';
+  document.getElementById('tkSeat').textContent = `${b.className} · ${b.seats.join(', ')}`;
+  document.getElementById('tkPrice').textContent = b.price.toLocaleString()+' บาท';
+  buildQR();
+}
+
+/* ---------------- History ---------------- */
+let historyFilter = 'all';   // all | wait | ok | cancel
+
+const STATUS_META = {
+  ok:     {cls:'ok',     text:'ชำระแล้ว'},
+  wait:   {cls:'wait',   text:'รอชำระเงิน'},
+  cancel: {cls:'cancel', text:'ยกเลิกแล้ว'}
+};
+
+function renderHistory(){
+  const wrap=document.getElementById('historyList');
+  wrap.innerHTML='';
+
+  const u = currentUser();
+  let list = getBookings();
+  // ถ้าเข้าสู่ระบบอยู่ ให้แสดงเฉพาะการจองของผู้ใช้คนนั้น
+  if(u) list = list.filter(b => b.owner === u.email);
+  if(historyFilter !== 'all') list = list.filter(b => b.status === historyFilter);
+
+  if(list.length === 0){
+    wrap.innerHTML = `<div class="empty-note">ยังไม่มีรายการจองในหมวดนี้<br><br>
+      <button class="btn btn-primary" onclick="showPage('home')">🔍 ค้นหาและจองตั๋ว</button></div>`;
+    return;
+  }
+
+  list.forEach(h=>{
+    const meta = STATUS_META[h.status] || STATUS_META.ok;
+    const card=document.createElement('div');
+    card.className='hist-card';
+    card.innerHTML=`
+      <div>
+        <div class="hist-id">${h.id}</div>
+        <div style="font-weight:600;font-size:15px;margin:2px 0;">${h.route}</div>
+        <div style="font-size:12.5px;color:var(--ink-soft);">${h.date} | ${h.time} · ${h.className||''} · ที่นั่ง ${(h.seats||[]).join(', ')}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="font-weight:700;color:var(--primary);">${h.price.toLocaleString()} บาท</div>
+        <span class="badge ${meta.cls}">${meta.text}</span>
+        <button class="btn btn-ghost" onclick="viewTicket('${h.id}')">ดูรายละเอียด</button>
+        <button class="btn btn-ghost" style="color:var(--danger);border-color:#f3d0d0;" onclick="deleteBooking('${h.id}')">🗑 ลบ</button>
+      </div>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+function setHistoryFilter(filter, btn){
+  historyFilter = filter;
+  document.querySelectorAll('.hist-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistory();
+}
+
+function viewTicket(id){
+  const b = getBookings().find(x=>x.id===id);
+  if(!b) return;
+  renderTicket(b);
+  showPage('eticket');
+}
+
+function deleteBooking(id){
+  if(!confirm('ต้องการลบรายการจองนี้ใช่หรือไม่?')) return;
+  const all = getBookings().filter(b=>b.id!==id);
+  saveBookings(all);
+  toast('ลบรายการจองแล้ว');
+  renderHistory();
+}
+
+/* ---------------- Auth ---------------- */
+function doRegister(){
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const phone = document.getElementById('regPhone').value.trim();
+  const pass = document.getElementById('regPassword').value;
+  const pass2 = document.getElementById('regPasswordConfirm').value;
+  const agree = document.getElementById('agreeTerms').checked;
+
+  if(!name || !email || !pass){ toast('กรุณากรอกชื่อ อีเมล และรหัสผ่านให้ครบ'); return; }
+  if(pass.length < 6){ toast('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'); return; }
+  if(pass !== pass2){ toast('รหัสผ่านทั้งสองช่องไม่ตรงกัน'); return; }
+  if(!agree){ toast('กรุณายอมรับข้อกำหนดและเงื่อนไข'); return; }
+
+  const users = getUsers();
+  if(users.some(u=>u.email===email)){ toast('อีเมลนี้ถูกใช้สมัครแล้ว'); return; }
+
+  users.push({name, email, phone, password:pass});
+  saveUsers(users);
+  toast('สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบ');
+  // เติมอีเมลให้อัตโนมัติในหน้า login
+  document.getElementById('loginEmail').value = email;
+  showPage('login');
+}
+
+function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPassword').value;
+  if(!email || !pass){ toast('กรุณากรอกอีเมลและรหัสผ่าน'); return; }
+
+  const user = getUsers().find(u=>u.email===email && u.password===pass);
+  if(!user){ toast('อีเมลหรือรหัสผ่านไม่ถูกต้อง'); return; }
+
+  setSession({name:user.name, email:user.email});
+  applySession();
+  toast('เข้าสู่ระบบสำเร็จ · ยินดีต้อนรับ '+user.name);
+  showPage('home');
+}
+
+function doLogout(){
+  setSession(null);
+  applySession();
+  toast('ออกจากระบบแล้ว');
+  showPage('home');
+}
+
+// อัปเดต header ตามสถานะการเข้าสู่ระบบปัจจุบัน
+function applySession(){
+  const u = currentUser();
+  const guest = document.getElementById('guestActions');
+  const chip = document.getElementById('userChip');
+  if(u){
+    guest.style.display='none';
+    chip.style.display='flex';
+    document.getElementById('userName').textContent = u.name;
+    document.getElementById('userAvatar').textContent = initials(u.name);
+  }else{
+    guest.style.display='flex';
+    chip.style.display='none';
+  }
+}
+
+/* ---------------- Init ---------------- */
+applySession();
+</script>
+</body>
+</html>
