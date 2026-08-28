@@ -3,3 +3,5 @@ npm-debug.log*
 *.log
 .DS_Store
 .env
+src/database.sqlite
+src/database.sqlite-*

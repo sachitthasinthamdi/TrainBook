@@ -1,10 +1,10 @@
 /**
- * seed.js — ใส่ข้อมูลตั้งต้นลงฐานข้อมูล
- * รันตรง ๆ ด้วย:  npm run seed   (ล้างข้อมูลเดิมแล้วใส่ใหม่)
+ * seed.js — ใส่ข้อมูลตั้งต้นลงฐานข้อมูล (รองรับทั้ง Turso และ local)
+ * รันตรง ๆ:  npm run seed   (ล้างข้อมูลเดิมแล้วใส่ใหม่)
  * หรือถูกเรียกจาก server อัตโนมัติเมื่อฐานข้อมูลว่าง (ensureSeeded)
  */
 const bcrypt = require('bcryptjs');
-const { db, init } = require('./db');
+const { get, run, initDb } = require('./db');
 
 const FROM = 'กรุงเทพฯ (หัวลำโพง)';
 const TO = 'เชียงใหม่';
@@ -29,50 +29,53 @@ const TRAINS = [
 ];
 
 // ใส่ข้อมูลตั้งต้นทั้งหมด (ล้างของเดิมก่อน)
-function seed() {
-  init();
-  db.exec(`
-    DELETE FROM booking_seats;
-    DELETE FROM bookings;
-    DELETE FROM train_classes;
-    DELETE FROM trains;
-    DELETE FROM users;
-    DELETE FROM sqlite_sequence;
-  `);
+async function seed() {
+  await initDb();
+  for (const t of ['booking_seats', 'bookings', 'train_classes', 'trains', 'users']) {
+    await run(`DELETE FROM ${t}`);
+  }
+  try { await run(`DELETE FROM sqlite_sequence`); } catch { /* บางกรณีไม่มีตารางนี้ */ }
 
-  db.prepare(`INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, 'admin')`)
-    .run('ผู้ดูแลระบบ', 'admin@trainbook.com', '0800000000', bcrypt.hashSync('admin123', 10));
-
-  db.prepare(`INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, 'user')`)
-    .run('สมชาย ใจดี', 'user@example.com', '0812345678', bcrypt.hashSync('user123', 10));
-
-  const insTrain = db.prepare(
-    `INSERT INTO trains (train_number, tag, from_city, to_city, dep_time, arr_time, duration)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`
+  await run(
+    `INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, 'admin')`,
+    ['ผู้ดูแลระบบ', 'admin@trainbook.com', '0800000000', bcrypt.hashSync('admin123', 10)]
   );
-  const insClass = db.prepare(
-    `INSERT INTO train_classes (train_id, class_name, price, total_seats) VALUES (?, ?, ?, ?)`
+  await run(
+    `INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, 'user')`,
+    ['สมชาย ใจดี', 'user@example.com', '0812345678', bcrypt.hashSync('user123', 10)]
   );
+
   for (const t of TRAINS) {
-    const res = insTrain.run(t.number, t.tag, FROM, TO, t.dep, t.arr, t.dur);
-    for (const c of t.classes) insClass.run(res.lastInsertRowid, c.name, c.price, c.seats);
+    const res = await run(
+      `INSERT INTO trains (train_number, tag, from_city, to_city, dep_time, arr_time, duration)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [t.number, t.tag, FROM, TO, t.dep, t.arr, t.dur]
+    );
+    for (const c of t.classes) {
+      await run(
+        `INSERT INTO train_classes (train_id, class_name, price, total_seats) VALUES (?, ?, ?, ?)`,
+        [res.lastInsertRowid, c.name, c.price, c.seats]
+      );
+    }
   }
 }
 
-// seed เฉพาะเมื่อยังไม่มีข้อมูล (ใช้ตอน server เริ่มทำงาน — ปลอดภัยต่อ hosting ที่ไฟล์รีเซ็ต)
-function ensureSeeded() {
-  init();
-  const n = db.prepare(`SELECT COUNT(*) AS c FROM trains`).get().c;
-  if (n === 0) { seed(); console.log('🌱 ฐานข้อมูลว่าง — ใส่ข้อมูลตั้งต้นอัตโนมัติแล้ว'); }
+// seed เฉพาะเมื่อยังไม่มีข้อมูล (ปลอดภัยต่อ hosting)
+async function ensureSeeded() {
+  await initDb();
+  const row = await get(`SELECT COUNT(*) AS c FROM trains`);
+  if (Number(row.c) === 0) { await seed(); console.log('🌱 ฐานข้อมูลว่าง — ใส่ข้อมูลตั้งต้นอัตโนมัติแล้ว'); }
 }
 
 module.exports = { seed, ensureSeeded };
 
-// ถ้ารันไฟล์นี้ตรง ๆ (npm run seed) → ล้างและ seed ใหม่ทั้งหมด
+// รันไฟล์นี้ตรง ๆ (npm run seed)
 if (require.main === module) {
-  seed();
-  console.log('✅ Seed สำเร็จ');
-  console.log('   • ผู้ดูแลระบบ : admin@trainbook.com / admin123');
-  console.log('   • ผู้ใช้ตัวอย่าง: user@example.com / user123');
-  console.log(`   • ขบวนรถ ${TRAINS.length} ขบวน พร้อมชั้นโดยสาร`);
+  seed().then(() => {
+    console.log('✅ Seed สำเร็จ');
+    console.log('   • ผู้ดูแลระบบ : admin@trainbook.com / admin123');
+    console.log('   • ผู้ใช้ตัวอย่าง: user@example.com / user123');
+    console.log(`   • ขบวนรถ ${TRAINS.length} ขบวน พร้อมชั้นโดยสาร`);
+    process.exit(0);
+  }).catch(e => { console.error('❌ Seed ล้มเหลว:', e.message); process.exit(1); });
 }

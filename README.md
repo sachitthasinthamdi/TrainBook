@@ -40,8 +40,7 @@ trainbook/
 ├── src/               Backend
 │   ├── server.js      Express + REST API
 │   ├── db.js          เชื่อมต่อ + schema
-│   ├── seed.js        ข้อมูลตั้งต้น
-│   └── database.sqlite ฐานข้อมูล
+│   └── seed.js        ข้อมูลตั้งต้น
 ├── package.json
 └── README.md
 ```
@@ -55,6 +54,19 @@ npm start         # รัน server
 ```
 
 เปิดเบราว์เซอร์ที่ **http://localhost:3000**
+
+> ถ้าไม่ตั้งค่า Turso ระบบจะใช้ไฟล์ SQLite ภายในเครื่อง (`src/database.sqlite`) โดยอัตโนมัติ
+
+## ☁️ การใช้ฐานข้อมูล Turso (cloud — ข้อมูลถาวร)
+
+ระบบรองรับฐานข้อมูล [Turso](https://turso.tech) (SQLite บน cloud) เพื่อให้ข้อมูลไม่หายเมื่อ deploy บนโฮสต์ที่ไฟล์รีเซ็ต เพียงตั้งค่า environment variables 2 ตัว:
+
+```bash
+TURSO_DATABASE_URL=libsql://<ชื่อ-db>.turso.io
+TURSO_AUTH_TOKEN=<token>
+```
+
+เมื่อมีค่าทั้งสอง ระบบจะเชื่อมต่อ Turso แทนไฟล์ในเครื่องโดยอัตโนมัติ และจะใส่ข้อมูลตั้งต้นให้เองเมื่อฐานข้อมูลว่าง
 
 ## 🔑 บัญชีเริ่มต้น (หลัง seed)
 
