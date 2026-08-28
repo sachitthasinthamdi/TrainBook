@@ -1,0 +1,16 @@
+{
+  "name": "trainbook",
+  "version": "2.0.0",
+  "description": "TrainBook - ระบบจองตั๋วรถไฟออนไลน์ (Full-stack: Node + SQLite)",
+  "type": "commonjs",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "seed": "node src/seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

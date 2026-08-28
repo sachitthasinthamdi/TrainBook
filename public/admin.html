@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrainBook | ผู้ดูแลระบบ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .admin-wrap{max-width:1200px;margin:0 auto;padding:24px;}
+  .admin-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px;}
+  .stat-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+  .stat-card .lbl{font-size:13px;color:var(--ink-soft);margin-bottom:6px;}
+  .stat-card .val{font-size:28px;font-weight:700;color:var(--primary);}
+  .tabbar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .tabbar button{border:1.5px solid var(--line);background:#fff;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;color:var(--ink-soft);}
+  .tabbar button.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+  th,td{text-align:left;padding:12px 14px;font-size:13.5px;border-bottom:1px solid var(--line);}
+  th{background:#F1F5FB;color:var(--ink-soft);font-weight:600;font-family:'Kanit';}
+  tr:last-child td{border-bottom:none;}
+  .table-wrap{overflow-x:auto;}
+  .mini{padding:6px 12px;font-size:12.5px;border-radius:8px;}
+  .row-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .overlay{position:fixed;inset:0;background:rgba(11,30,62,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+  .overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:16px;padding:26px;max-width:560px;width:100%;max-height:90vh;overflow:auto;box-shadow:var(--shadow-lg);}
+  .modal h3{margin:0 0 18px;}
+  .class-row{display:grid;grid-template-columns:1fr 90px 90px 34px;gap:8px;margin-bottom:8px;align-items:center;}
+  .class-row input{border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13.5px;}
+  .del-x{border:none;background:#FBE7E7;color:var(--danger);border-radius:8px;height:34px;font-weight:700;}
+  @media(max-width:760px){.stat-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-row">
+    <div class="brand">
+      <span class="logo-icon">🚆</span>
+      <span>TrainBook<br><small>ADMIN · ผู้ดูแลระบบ</small></span>
+    </div>
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="/index.html">← กลับหน้าเว็บ</a>
+      <span id="adminName" style="font-weight:600;font-size:14px;"></span>
+      <button class="btn btn-primary" onclick="logout()">ออกจากระบบ</button>
+    </div>
+  </div>
+</header>
+
+<div class="admin-wrap">
+  <div class="admin-head">
+    <div>
+      <h2 style="margin:0;">แดชบอร์ดผู้ดูแลระบบ</h2>
+      <p class="page-sub" style="margin:4px 0 0;">จัดการขบวนรถ ดูการจองทั้งหมด และสมาชิก</p>
+    </div>
+  </div>
+
+  <div class="stat-grid" id="statGrid">
+    <div class="stat-card"><div class="lbl">สมาชิก</div><div class="val" id="stUsers">–</div></div>
+    <div class="stat-card"><div class="lbl">ขบวนรถ</div><div class="val" id="stTrains">–</div></div>
+    <div class="stat-card"><div class="lbl">การจองทั้งหมด</div><div class="val" id="stBookings">–</div></div>
+    <div class="stat-card"><div class="lbl">รายได้ (ชำระแล้ว)</div><div class="val" id="stRevenue">–</div></div>
+  </div>
+
+  <div class="tabbar">
+    <button class="active" data-tab="trains" onclick="switchTab('trains',this)">🚆 จัดการขบวนรถ</button>
+    <button data-tab="bookings" onclick="switchTab('bookings',this)">🎫 การจองทั้งหมด</button>
+    <button data-tab="users" onclick="switchTab('users',this)">👥 สมาชิก</button>
+  </div>
+
+  <!-- Trains -->
+  <section id="tab-trains">
+    <div style="margin-bottom:14px;"><button class="btn btn-primary" onclick="openTrainForm()">+ เพิ่มขบวนรถ</button></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>เลขขบวน</th><th>ประเภท</th><th>เส้นทาง</th><th>เวลา</th><th>ชั้นโดยสาร</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
+      <tbody id="trainRows"></tbody>
+    </table></div>
+  </section>
+
+  <!-- Bookings -->
+  <section id="tab-bookings" style="display:none;">
+    <div class="table-wrap"><table>
+      <thead><tr><th>รหัสจอง</th><th>ผู้จอง</th><th>เส้นทาง</th><th>วันเดินทาง</th><th>ที่นั่ง</th><th>ราคา</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
+      <tbody id="bookingRows"></tbody>
+    </table></div>
+  </section>
+
+  <!-- Users -->
+  <section id="tab-users" style="display:none;">
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>ชื่อ</th><th>อีเมล</th><th>เบอร์โทร</th><th>บทบาท</th><th>สมัครเมื่อ</th></tr></thead>
+      <tbody id="userRows"></tbody>
+    </table></div>
+  </section>
+</div>
+
+<!-- Train form modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="formTitle">เพิ่มขบวนรถ</h3>
+    <input type="hidden" id="fTrainId">
+    <div class="form-grid" style="margin-bottom:12px;">
+      <div class="form-field"><label>เลขขบวน</label><input id="fNumber" type="number" placeholder="เช่น 9"></div>
+      <div class="form-field"><label>ประเภท</label><input id="fTag" placeholder="เช่น ด่วนพิเศษ"></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:12px;">
+      <div class="form-field"><label>ต้นทาง</label><input id="fFrom" placeholder="กรุงเทพฯ (หัวลำโพง)"></div>
+      <div class="form-field"><label>ปลายทาง</label><input id="fTo" placeholder="เชียงใหม่"></div>
+    </div>
+    <div class="form-grid g3" style="margin-bottom:16px;">
+      <div class="form-field"><label>เวลาออก</label><input id="fDep" placeholder="18:10"></div>
+      <div class="form-field"><label>เวลาถึง</label><input id="fArr" placeholder="07:15"></div>
+      <div class="form-field"><label>ระยะเวลา</label><input id="fDur" placeholder="13 ชม. 05 นาที"></div>
+    </div>
+
+    <div style="font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:8px;">ชั้นโดยสาร</div>
+    <div class="class-row" style="font-size:11.5px;color:var(--ink-soft);">
+      <div>ชื่อชั้น</div><div>ราคา</div><div>ที่นั่ง</div><div></div>
+    </div>
+    <div id="classRows"></div>
+    <button class="btn btn-ghost mini" onclick="addClassRow()" style="margin-top:4px;">+ เพิ่มชั้น</button>
+
+    <div style="display:flex;gap:12px;margin-top:22px;">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeTrainForm()">ยกเลิก</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveTrain()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="admin.js"></script>
+</body>
+</html>
