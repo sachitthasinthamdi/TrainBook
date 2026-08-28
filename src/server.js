@@ -59,6 +59,10 @@ function trainWithClasses(train) {
   return { ...train, classes };
 }
 
+/* ============================ Health check ============================ */
+// endpoint เบา ๆ ให้บริการ ping ภายนอกเรียกทุก ~10 นาที กัน Render พักตัว (keep-alive)
+app.get('/api/health', (_req, res) => res.json({ ok: true, time: new Date().toISOString() }));
+
 /* ============================ Auth ============================ */
 app.post('/api/auth/register', (req, res) => {
   const { name, email, phone, password } = req.body || {};
