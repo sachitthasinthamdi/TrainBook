@@ -7,7 +7,7 @@ const express = require('express');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { db, get, all, run, initDb, useTurso } = require('./db');
+const { get, all, run, transaction, initDb, isTurso } = require('./db');
 const { ensureSeeded } = require('./seed');
 
 const app = express();
@@ -57,7 +57,7 @@ async function trainWithClasses(train) {
 }
 
 /* ============================ Health check ============================ */
-app.get('/api/health', (_req, res) => res.json({ ok: true, db: useTurso ? 'turso' : 'local', time: new Date().toISOString() }));
+app.get('/api/health', (_req, res) => res.json({ ok: true, db: isTurso() ? 'turso' : 'local', time: new Date().toISOString() }));
 
 /* ============================ Auth ============================ */
 app.post('/api/auth/register', wrap(async (req, res) => {
@@ -158,7 +158,7 @@ app.post('/api/bookings', authRequired, wrap(async (req, res) => {
   const code = randomBookingCode();
 
   // transaction: booking + ที่นั่งทั้งหมด ต้องสำเร็จพร้อมกัน
-  const tx = await db.transaction('write');
+  const tx = await transaction('write');
   try {
     const info = await tx.execute({
       sql: `INSERT INTO bookings (booking_code, user_id, train_id, class_id, travel_date, pax, total_price, status, payment_method)
@@ -305,6 +305,6 @@ app.use((err, _req, res, _next) => {
   await initDb();
   await ensureSeeded();
   app.listen(PORT, () => {
-    console.log(`🚆 TrainBook backend ทำงานที่ http://localhost:${PORT}  (ฐานข้อมูล: ${useTurso ? 'Turso' : 'local file'})`);
+    console.log(`🚆 TrainBook backend ทำงานที่ http://localhost:${PORT}  (ฐานข้อมูล: ${isTurso() ? 'Turso' : 'local file'})`);
   });
 })().catch(e => { console.error('เริ่มเซิร์ฟเวอร์ไม่สำเร็จ:', e); process.exit(1); });
