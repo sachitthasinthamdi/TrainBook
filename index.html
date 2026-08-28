@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrainBook | ระบบจองตั๋วรถไฟออนไลน์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-row">
+    <div class="brand" onclick="showPage('home')" style="cursor:pointer">
+      <span class="logo-icon">🚆</span>
+      <span>TrainBook<br><small>ONLINE TRAIN TICKET BOOKING</small></span>
+    </div>
+    <nav class="main-nav">
+      <a onclick="showPage('home')" class="nav-link active" data-p="home">หน้าแรก</a>
+      <a onclick="showPage('results')" class="nav-link" data-p="results">ค้นหาตั๋ว</a>
+      <a onclick="showPage('history')" class="nav-link" data-p="history">ตรวจสอบการจอง</a>
+      <a onclick="showPage('home')" class="nav-link">เกี่ยวกับเรา</a>
+      <a onclick="showPage('home')" class="nav-link">ติดต่อเรา</a>
+    </nav>
+    <div class="header-actions">
+      <div id="guestActions" style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" onclick="showPage('login')">เข้าสู่ระบบ</button>
+        <button class="btn btn-primary" onclick="showPage('register')">สมัครสมาชิก</button>
+      </div>
+      <div id="userChip" class="user-chip">
+        <div class="avatar" id="userAvatar" onclick="showPage('history')">สจ</div>
+        <span id="userName" onclick="showPage('history')">สมชาย ใจดี</span>
+        <button class="btn btn-ghost" style="padding:6px 12px;font-size:13px;margin-left:6px;" onclick="doLogout()">ออกจากระบบ</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HOME ================= -->
+<section class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-rail"></div>
+    <div class="container hero-inner">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">TRAINBOOK · ระบบจองตั๋วรถไฟออนไลน์</div>
+          <h1>เดินทางง่าย จองตั๋วรถไฟ<br>สะดวก รวดเร็ว ปลอดภัย</h1>
+          <p>จองตั๋วรถไฟออนไลน์ได้ทุกเส้นทาง ทุกที่ทุกเวลา พร้อมเลือกที่นั่งและรับ E-Ticket ทันทีหลังชำระเงิน</p>
+        </div>
+        <div class="train-illustration">
+          <div class="win" style="left:12%;width:70px;"></div>
+          <div class="win" style="left:30%;width:70px;"></div>
+          <div class="win" style="left:48%;width:70px;"></div>
+          <div class="body"></div>
+          <div class="nose"></div>
+          <div class="track"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="search-card">
+      <div class="trip-tabs">
+        <button class="active" id="tabOneway" onclick="setTripType('oneway')">เที่ยวเดียว</button>
+        <button id="tabRound" onclick="setTripType('round')">ไป-กลับ</button>
+      </div>
+      <div class="search-fields">
+        <div class="field" style="position:relative;">
+          <label>ต้นทาง</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"></circle><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"></path></svg>
+            <select id="fromCity">
+              <option>กรุงเทพฯ (หัวลำโพง)</option>
+              <option>เชียงใหม่</option>
+              <option>พิษณุโลก</option>
+              <option>ขอนแก่น</option>
+            </select>
+          </div>
+          <button class="swap-btn" onclick="swapCities()" title="สลับต้นทาง-ปลายทาง">⇄</button>
+        </div>
+        <div class="field">
+          <label>ปลายทาง</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-8-8 18-2-8-8-2z"></path></svg>
+            <select id="toCity">
+              <option>เชียงใหม่</option>
+              <option>กรุงเทพฯ (หัวลำโพง)</option>
+              <option>พิษณุโลก</option>
+              <option>ขอนแก่น</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>วันเดินทาง</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+            <input type="date" id="travelDate" value="2024-05-27">
+          </div>
+        </div>
+        <div class="field" style="min-width:160px;">
+          <label>ผู้โดยสาร</label>
+          <div class="input-wrap">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>
+            <select id="paxCount">
+              <option value="1">ผู้ใหญ่ 1</option>
+              <option value="2">ผู้ใหญ่ 2</option>
+              <option value="3">ผู้ใหญ่ 3</option>
+              <option value="4">ผู้ใหญ่ 4</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:20px;">
+        <button class="btn btn-primary btn-lg" style="width:220px;" onclick="doSearch()">🔍 ค้นหาเที่ยวรถ</button>
+      </div>
+    </div>
+
+    <div class="features-strip">
+      <div class="feature"><div class="ic">🎫</div><div><h4>จองง่าย</h4><p>จองตั๋วรถไฟออนไลน์ได้ทุกที่ทุกเวลา</p></div></div>
+      <div class="feature"><div class="ic">🔒</div><div><h4>ชำระปลอดภัย</h4><p>ระบบชำระเงินได้มาตรฐานสากล</p></div></div>
+      <div class="feature"><div class="ic">📱</div><div><h4>ตั๋วอิเล็กทรอนิกส์</h4><p>รับ QR Code ได้ทันทีหลังชำระเงิน</p></div></div>
+      <div class="feature"><div class="ic">🕑</div><div><h4>บริการตลอด 24 ชม.</h4><p>พร้อมดูแลลูกค้าตลอดเวลา</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESULTS ================= -->
+<section class="page" id="page-results">
+  <div class="container inner-page">
+    <div class="summary-bar">
+      <div class="route-pill">
+        <span id="rsFrom">กรุงเทพฯ (หัวลำโพง)</span>
+        <span style="color:var(--primary)">→</span>
+        <span id="rsTo">เชียงใหม่</span>
+        <span class="muted" id="rsDate">27 พฤษภาคม 2567</span>
+      </div>
+      <button class="btn btn-ghost" onclick="showPage('home')">✏️ เปลี่ยนการค้นหา</button>
+    </div>
+
+    <div class="date-tabs" id="dateTabs"></div>
+
+    <div id="trainList"></div>
+  </div>
+</section>
+
+<!-- ================= SEATS ================= -->
+<section class="page" id="page-seats">
+  <div class="container inner-page">
+    <div class="stepper">
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">เลือกเที่ยวรถ</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item active"><div class="num-badge">2</div><div class="step-label">เลือกที่นั่ง</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item"><div class="num-badge">3</div><div class="step-label">ข้อมูลผู้โดยสาร</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item"><div class="num-badge">4</div><div class="step-label">ชำระเงิน</div></div>
+    </div>
+
+    <div class="seat-layout">
+      <div class="panel">
+        <h3 style="margin-top:0" id="seatTrainTitle">ขบวน 9 (ด่วนพิเศษ) · กรุงเทพฯ (หัวลำโพง) → เชียงใหม่</h3>
+        <p class="page-sub" style="margin-bottom:18px" id="seatTrainTime">27 พ.ค. 2567 | 18:10 - 07:15</p>
+
+        <div style="font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:10px;">เลือกชั้นโดยสาร</div>
+        <div class="coach-select" id="coachSelect"></div>
+
+        <div class="seat-map" id="seatMap"></div>
+
+        <div class="legend">
+          <span class="l-free"><i></i> ว่าง</span>
+          <span class="l-sel"><i></i> เลือกแล้ว</span>
+          <span class="l-taken"><i></i> ไม่ว่าง</span>
+        </div>
+      </div>
+
+      <div class="panel sidebar-summary">
+        <h4>ที่นั่งที่เลือก</h4>
+        <div id="chosenSeats" style="min-height:34px;">ยังไม่ได้เลือกที่นั่ง</div>
+        <div class="sum-total">
+          <span>ราคารวม</span>
+          <span class="amt" id="seatTotal">0 บาท</span>
+        </div>
+        <button class="btn btn-primary btn-block btn-lg" onclick="goPassengerPage()">ถัดไป</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PASSENGER INFO ================= -->
+<section class="page" id="page-passenger">
+  <div class="container inner-page">
+    <div class="stepper">
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">เลือกเที่ยวรถ</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">เลือกที่นั่ง</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item active"><div class="num-badge">3</div><div class="step-label">ข้อมูลผู้โดยสาร</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item"><div class="num-badge">4</div><div class="step-label">ชำระเงิน</div></div>
+    </div>
+
+    <div class="panel" style="max-width:820px;margin:0 auto;">
+      <h3 style="margin-top:0">ข้อมูลผู้โดยสาร</h3>
+      <div id="passengerForms"></div>
+
+      <div style="background:var(--bg);border-radius:12px;padding:16px 18px;margin-top:6px;">
+        <div style="font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:8px;">ข้อมูลการเดินทาง</div>
+        <div style="font-size:14px;" id="passengerTripInfo"></div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:22px;">
+        <button class="btn btn-ghost" onclick="showPage('seats')">← ย้อนกลับ</button>
+        <button class="btn btn-primary" style="flex:1" onclick="goPaymentPage()">ถัดไป</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PAYMENT ================= -->
+<section class="page" id="page-payment">
+  <div class="container inner-page">
+    <div class="stepper">
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">เลือกเที่ยวรถ</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">เลือกที่นั่ง</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item done"><div class="num-badge">✓</div><div class="step-label">ข้อมูลผู้โดยสาร</div></div>
+      <div class="step-connector"></div>
+      <div class="step-item active"><div class="num-badge">4</div><div class="step-label">ชำระเงิน</div></div>
+    </div>
+
+    <div class="seat-layout">
+      <div class="panel">
+        <h3 style="margin-top:0">เลือกวิธีชำระเงิน</h3>
+        <div class="pay-methods" id="payMethods">
+          <label class="pay-option selected"><div class="ic">💳</div><div><div class="pt-name">บัตรเครดิต / เดบิต</div><div class="pt-sub">Visa, Mastercard, JCB</div></div><input type="radio" name="pm" checked></label>
+          <label class="pay-option"><div class="ic">🏦</div><div><div class="pt-name">Mobile Banking</div><div class="pt-sub">ธนาคารชั้นนำทุกแห่ง</div></div><input type="radio" name="pm"></label>
+          <label class="pay-option"><div class="ic">🔳</div><div><div class="pt-name">QR Code PromptPay</div><div class="pt-sub">สแกนจ่ายผ่านแอปธนาคาร</div></div><input type="radio" name="pm"></label>
+          <label class="pay-option"><div class="ic">👛</div><div><div class="pt-name">e-Wallet</div><div class="pt-sub">TrueMoney, ShopeePay, LINE Pay</div></div><input type="radio" name="pm"></label>
+        </div>
+      </div>
+
+      <div class="panel sidebar-summary">
+        <h4>สรุปการจอง</h4>
+        <div id="paySummary"></div>
+        <div class="sum-total">
+          <span>ยอดชำระทั้งหมด</span>
+          <span class="amt" id="payTotal">0 บาท</span>
+        </div>
+        <button class="btn btn-primary btn-block btn-lg" onclick="doPayment()">💳 ชำระเงิน</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= E-TICKET ================= -->
+<section class="page" id="page-eticket">
+  <div class="container inner-page">
+    <div style="text-align:center;margin-bottom:22px;">
+      <div style="font-size:44px;">✅</div>
+      <h2 style="margin:8px 0 4px;">จองสำเร็จ! ขอบคุณที่ใช้บริการ TrainBook</h2>
+      <p class="page-sub">ตั๋วอิเล็กทรอนิกส์ของคุณพร้อมใช้งานแล้ว กรุณาแสดง QR Code นี้ก่อนขึ้นรถไฟ</p>
+    </div>
+
+    <div class="ticket-wrap">
+      <div class="ticket">
+        <div class="tk-top">
+          <div>
+            <div style="font-weight:700;font-size:16px;">🚆 การรถไฟแห่งประเทศไทย</div>
+            <div style="font-size:11.5px;color:#cfe0f5;">State Railway of Thailand</div>
+          </div>
+          <div class="tk-status">จองสำเร็จ</div>
+        </div>
+        <div style="font-size:11.5px;color:#cfe0f5;">รหัสการจอง (Booking ID)</div>
+        <div style="font-weight:700;font-size:17px;letter-spacing:.03em;" id="tkBookingId">TRN670S270001</div>
+
+        <div class="tk-route">
+          <div class="st" id="tkFrom">กรุงเทพฯ (หัวลำโพง)</div>
+          <div class="arrow">✈</div>
+          <div class="st" id="tkTo">เชียงใหม่</div>
+        </div>
+        <div class="tk-time" id="tkDateTime">27 พ.ค. 2567 | 18:10 → 07:15</div>
+
+        <div class="ticket-cut"></div>
+
+        <div class="qr-box" id="qrBox"></div>
+        <div style="text-align:center;font-size:11.5px;color:#cfe0f5;margin-bottom:16px;">แสดง QR Code นี้ก่อนขึ้นรถไฟ</div>
+
+        <div class="tk-info">
+          <div>ผู้โดยสาร<b id="tkPax">1 คน</b></div>
+          <div>ที่นั่ง<b id="tkSeat">ตู้ 2 · 5A</b></div>
+          <div>ราคารวม<b id="tkPrice">850 บาท</b></div>
+        </div>
+      </div>
+      <div class="ticket-actions">
+        <button class="btn btn-ghost btn-block" onclick="alert('กำลังดาวน์โหลดไฟล์ PDF...')">⬇ ดาวน์โหลด PDF</button>
+        <button class="btn btn-ghost btn-block" onclick="alert('ส่งอีเมลตั๋วเรียบร้อยแล้ว')">✉ ส่งอีเมล</button>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" style="margin-top:14px;" onclick="showPage('history')">ไปที่ประวัติการจอง</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HISTORY ================= -->
+<section class="page" id="page-history">
+  <div class="container inner-page">
+    <h2 class="page-title">ประวัติการจอง</h2>
+    <p class="page-sub">ตรวจสอบสถานะและรายละเอียดการจองตั๋วของคุณ</p>
+
+    <div class="hist-tabs">
+      <button class="hist-tab active" onclick="setHistoryFilter('all',this)">ทั้งหมด</button>
+      <button class="hist-tab" onclick="setHistoryFilter('wait',this)">รอชำระเงิน</button>
+      <button class="hist-tab" onclick="setHistoryFilter('ok',this)">ชำระแล้ว</button>
+      <button class="hist-tab" onclick="setHistoryFilter('cancel',this)">ยกเลิก</button>
+    </div>
+
+    <div id="historyList"></div>
+  </div>
+</section>
+
+<!-- ================= LOGIN ================= -->
+<section class="page" id="page-login">
+  <div class="container">
+    <div class="auth-split">
+      <div class="auth-visual">
+        <div class="brand" style="color:#fff;margin-bottom:34px;"><span class="logo-icon" style="background:rgba(255,255,255,.15)">🚆</span><span>TrainBook<br><small style="color:#cfe0f5">ONLINE TRAIN TICKET BOOKING</small></span></div>
+        <h2>ยินดีต้อนรับ<br>กลับเข้าสู่ระบบ</h2>
+        <p>เข้าสู่ระบบเพื่อจองตั๋วรถไฟออนไลน์ของคุณได้ทันที</p>
+        <div class="auth-feature"><div class="ic">🎫</div><div><h5>จองตั๋วได้ง่ายและรวดเร็ว</h5><p>เพียงไม่กี่ขั้นตอน</p></div></div>
+        <div class="auth-feature"><div class="ic">🕘</div><div><h5>ตรวจสอบการเดินทาง</h5><p>เช็กประวัติการจองได้ตลอดเวลา</p></div></div>
+        <div class="auth-feature"><div class="ic">🏷️</div><div><h5>รับสิทธิพิเศษและโปรโมชั่น</h5><p>สำหรับสมาชิกเท่านั้น</p></div></div>
+      </div>
+      <div class="auth-form">
+        <h2>เข้าสู่ระบบ</h2>
+        <p class="sub">กรอกอีเมลและรหัสผ่านเพื่อเข้าสู่ระบบ</p>
+        <div class="form-field" style="margin-bottom:14px;"><label>อีเมล</label><input id="loginEmail" type="email" placeholder="กรอกอีเมล"></div>
+        <div class="form-field"><label>รหัสผ่าน</label><input id="loginPassword" type="password" placeholder="กรอกรหัสผ่าน"></div>
+        <div class="checkbox-row"><input type="checkbox" id="rememberMe"><label for="rememberMe">จดจำฉันไว้ในระบบ</label> <span style="margin-left:auto;color:var(--primary);cursor:pointer;">ลืมรหัสผ่าน?</span></div>
+        <button class="btn btn-primary btn-block btn-lg" style="margin-top:14px;" onclick="doLogin()">เข้าสู่ระบบ</button>
+        <div class="divider-or">หรือเข้าสู่ระบบด้วย</div>
+        <div class="social-row">
+          <button class="social-btn">🟢 เข้าสู่ระบบด้วย Google</button>
+          <button class="social-btn">🔵 เข้าสู่ระบบด้วย Facebook</button>
+        </div>
+        <div class="auth-switch">ยังไม่มีบัญชี? <a onclick="showPage('register')">สมัครสมาชิก</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= REGISTER ================= -->
+<section class="page" id="page-register">
+  <div class="container">
+    <div class="auth-split">
+      <div class="auth-visual">
+        <div class="brand" style="color:#fff;margin-bottom:34px;"><span class="logo-icon" style="background:rgba(255,255,255,.15)">🚆</span><span>TrainBook<br><small style="color:#cfe0f5">ONLINE TRAIN TICKET BOOKING</small></span></div>
+        <h2>สมัครสมาชิก<br>สร้างบัญชีของคุณ</h2>
+        <p>สมัครสมาชิกเพื่อจองตั๋วรถไฟออนไลน์สะดวก รวดเร็ว ปลอดภัย ได้ทุกที่ทุกเวลา</p>
+        <div class="auth-feature"><div class="ic">🎫</div><div><h5>จองตั๋วได้ทุกที่</h5><p>จองตั๋วรถไฟออนไลน์ได้ทุกที่ ทุกเวลา</p></div></div>
+        <div class="auth-feature"><div class="ic">💺</div><div><h5>เลือกที่นั่งได้ง่าย</h5><p>เลือกที่นั่งที่คุณต้องการแบบเรียลไทม์</p></div></div>
+        <div class="auth-feature"><div class="ic">🔔</div><div><h5>แจ้งเตือนทันที</h5><p>รับการแจ้งเตือนสถานะการจองผ่านอีเมลหรือ SMS</p></div></div>
+      </div>
+      <div class="auth-form">
+        <h2>สมัครสมาชิก</h2>
+        <p class="sub">กรอกข้อมูลเพื่อสร้างบัญชีใหม่</p>
+        <div class="form-grid" style="margin-bottom:14px;">
+          <div class="form-field"><label>ชื่อ - นามสกุล</label><input id="regName" placeholder="กรอกชื่อ - นามสกุล"></div>
+          <div class="form-field"><label>อีเมล</label><input id="regEmail" type="email" placeholder="กรอกอีเมล"></div>
+        </div>
+        <div class="form-field" style="margin-bottom:14px;"><label>เบอร์โทรศัพท์</label><input id="regPhone" placeholder="กรอกเบอร์โทรศัพท์"></div>
+        <div class="form-grid">
+          <div class="form-field"><label>รหัสผ่าน</label><input id="regPassword" type="password" placeholder="ตั้งรหัสผ่าน (อย่างน้อย 6 ตัวอักษร)"></div>
+          <div class="form-field"><label>ยืนยันรหัสผ่าน</label><input id="regPasswordConfirm" type="password" placeholder="ยืนยันรหัสผ่าน"></div>
+        </div>
+        <div class="checkbox-row" style="margin-top:12px;"><input type="checkbox" id="agreeTerms"><label for="agreeTerms">ฉันยอมรับ ข้อกำหนดและเงื่อนไข และนโยบายความเป็นส่วนตัว</label></div>
+        <button class="btn btn-primary btn-block btn-lg" style="margin-top:8px;" onclick="doRegister()">สมัครสมาชิก</button>
+        <div class="divider-or">หรือสมัครด้วย</div>
+        <div class="social-row">
+          <button class="social-btn">🟢 สมัครด้วย Google</button>
+          <button class="social-btn">🔵 สมัครด้วย Facebook</button>
+        </div>
+        <div class="auth-switch">มีบัญชีอยู่แล้ว? <a onclick="showPage('login')">เข้าสู่ระบบ</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>© 2024-2026 TrainBook — ระบบจองตั๋วรถไฟออนไลน์ สงวนลิขสิทธิ์ทุกประการ</footer>
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
