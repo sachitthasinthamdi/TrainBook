@@ -191,12 +191,10 @@ app.get('/api/bookings/:id', authRequired, (req, res) => {
   res.json(b);
 });
 
-// ลบการจอง (เจ้าของ หรือ admin)
-app.delete('/api/bookings/:id', authRequired, (req, res) => {
+// ลบการจอง — เฉพาะผู้ดูแลระบบเท่านั้น (ผู้ใช้ทั่วไปลบตั๋วเองไม่ได้ตามหลักการ)
+app.delete('/api/bookings/:id', adminRequired, (req, res) => {
   const b = db.prepare(`SELECT * FROM bookings WHERE id = ?`).get(req.params.id);
   if (!b) return res.status(404).json({ error: 'ไม่พบการจอง' });
-  if (b.user_id !== req.user.id && req.user.role !== 'admin')
-    return res.status(403).json({ error: 'ไม่มีสิทธิ์ลบการจองนี้' });
   db.prepare(`DELETE FROM bookings WHERE id = ?`).run(req.params.id); // booking_seats ลบตาม (CASCADE)
   res.json({ ok: true });
 });

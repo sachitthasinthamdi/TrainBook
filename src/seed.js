@@ -25,10 +25,10 @@ db.prepare(
 ).run('ผู้ดูแลระบบ', 'admin@trainbook.com', '0800000000', adminPass);
 
 // ---- บัญชีผู้ใช้ตัวอย่าง ----
-const userPass = bcrypt.hashSync('123456', 10);
+const userPass = bcrypt.hashSync('user123', 10);
 db.prepare(
   `INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, 'user')`
-).run('สมชาย ใจดี', 'somchai@example.com', '0812345678', userPass);
+).run('สมชาย ใจดี', 'user@example.com', '0812345678', userPass);
 
 // ---- ขบวนรถ + ชั้นโดยสาร ----
 const TRAINS = [
@@ -69,5 +69,5 @@ for (const t of TRAINS) {
 
 console.log('✅ Seed สำเร็จ');
 console.log('   • ผู้ดูแลระบบ : admin@trainbook.com / admin123');
-console.log('   • ผู้ใช้ตัวอย่าง: somchai@example.com / 123456');
+console.log('   • ผู้ใช้ตัวอย่าง: user@example.com / user123');
 console.log(`   • ขบวนรถ ${TRAINS.length} ขบวน พร้อมชั้นโดยสาร`);

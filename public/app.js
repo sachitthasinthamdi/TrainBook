@@ -351,7 +351,6 @@ async function renderHistory() {
         <div style="font-weight:700;color:var(--primary);">${h.total_price.toLocaleString()} บาท</div>
         <span class="badge ${meta.cls}">${meta.text}</span>
         <button class="btn btn-ghost" onclick="viewTicket(${h.id})">ดูรายละเอียด</button>
-        <button class="btn btn-ghost" style="color:var(--danger);border-color:#f3d0d0;" onclick="deleteBooking(${h.id})">🗑 ลบ</button>
       </div>
     `;
     wrap.appendChild(card);
@@ -370,14 +369,6 @@ async function viewTicket(id) {
   try { b = await api('/api/bookings/' + id); } catch (e) { toast(e.message); return; }
   renderTicket(b);
   showPage('eticket');
-}
-
-async function deleteBooking(id) {
-  if (!confirm('ต้องการลบรายการจองนี้ใช่หรือไม่?')) return;
-  try { await api('/api/bookings/' + id, { method: 'DELETE' }); }
-  catch (e) { toast(e.message); return; }
-  toast('ลบรายการจองแล้ว');
-  renderHistory();
 }
 
 /* ---------------- Auth ---------------- */
